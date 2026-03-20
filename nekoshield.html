@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NekoShield — Your Guardian Against Fake Links</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #080b14;
+    --darker: #050810;
+    --card: #0d1224;
+    --border: rgba(255,255,255,0.07);
+    --cyan: #00e5ff;
+    --pink: #ff2d78;
+    --green: #00ff88;
+    --yellow: #ffd600;
+    --text: #e8eaf6;
+    --muted: #6b7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.18;
+  }
+  .orb-1 { width: 600px; height: 600px; background: #ff2d78; top: -200px; right: -100px; animation: drift1 12s ease-in-out infinite; }
+  .orb-2 { width: 500px; height: 500px; background: #00e5ff; bottom: -150px; left: -100px; animation: drift2 15s ease-in-out infinite; }
+  .orb-3 { width: 300px; height: 300px; background: #00ff88; top: 50%; left: 50%; animation: drift3 10s ease-in-out infinite; }
+
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,30px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-40px)} }
+  @keyframes drift3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.3)} }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(8,11,20,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.5px;
+  }
+
+  .nav-logo span { color: var(--cyan); }
+
+  .nav-logo img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--cyan);
+    box-shadow: 0 0 12px rgba(0,229,255,0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--cyan);
+    color: var(--dark);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px rgba(0,229,255,0.3);
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(0,229,255,0.5); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 48px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 60px;
+  }
+
+  .hero-text { flex: 1; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    color: var(--cyan);
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  h1 .accent-cyan { color: var(--cyan); }
+  h1 .accent-pink { color: var(--pink); }
+
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 480px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), #0099bb);
+    color: var(--dark);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 30px rgba(0,229,255,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,229,255,0.4); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
+
+  /* Hero image */
+  .hero-image {
+    flex: 0 0 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .neko-glow {
+    position: absolute;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(0,229,255,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.15);opacity:1} }
+
+  .neko-img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 40px rgba(0,229,255,0.4));
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+  /* Shield ring */
+  .shield-ring {
+    position: absolute;
+    width: 340px; height: 340px;
+    border: 2px solid rgba(0,229,255,0.15);
+    border-radius: 50%;
+    animation: spin 20s linear infinite;
+  }
+  .shield-ring::before {
+    content: '';
+    position: absolute;
+    width: 10px; height: 10px;
+    background: var(--cyan);
+    border-radius: 50%;
+    top: -5px; left: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+  }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* Stats bar */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 48px;
+  }
+
+  .stats-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--cyan);
+    letter-spacing: -1px;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* HOW IT WORKS */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 60px;
+    line-height: 1.1;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,229,255,0.2);
+  }
+
+  .step-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,229,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: rgba(0,229,255,0.08);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .step-icon {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .step-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* THREAT DETECTOR DEMO */
+  .demo-section {
+    position: relative;
+    z-index: 1;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 100px 48px;
+  }
+
+  .demo-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .demo-card {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    position: relative;
+  }
+
+  .demo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .demo-dot.red { background: #ff5f57; }
+  .demo-dot.yellow { background: #ffbd2e; }
+  .demo-dot.green { background: #28ca41; }
+
+  .demo-title-bar {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    height: 24px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .result-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-item:last-child { border-bottom: none; }
+
+  .result-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .result-icon.danger { background: rgba(255,45,120,0.15); }
+  .result-icon.warning { background: rgba(255,214,0,0.15); }
+  .result-icon.safe { background: rgba(0,255,136,0.15); }
+
+  .result-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .result-value {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .result-value.danger { color: var(--pink); }
+  .result-value.warning { color: var(--yellow); }
+  .result-value.safe { color: var(--green); }
+
+  .risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,45,120,0.12);
+    border: 1px solid rgba(255,45,120,0.3);
+    color: var(--pink);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 16px;
+  }
+
+  /* BRANDS */
+  .brands-section {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .brand-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .brand-pill:hover {
+    border-color: rgba(0,229,255,0.2);
+    color: var(--text);
+    background: rgba(0,229,255,0.04);
+  }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 16px;
+  }
+
+  .price-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 28px;
+    position: relative;
+    transition: transform 0.3s;
+  }
+
+  .price-card:hover { transform: translateY(-4px); }
+
+  .price-card.featured {
+    border-color: var(--cyan);
+    box-shadow: 0 0 40px rgba(0,229,255,0.1);
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cyan);
+    color: var(--dark);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 16px;
+    border-radius: 100px;
+  }
+
+  .price-plan {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+  }
+
+  .price-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .price-amount span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0;
+  }
+
+  .price-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+    margin-top: 8px;
+  }
+
+  .price-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .price-features li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .price-features li::before {
+    content: '✓';
+    color: var(--cyan);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .price-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+  }
+
+  .price-btn.featured-btn {
+    background: var(--cyan);
+    color: var(--dark);
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0,229,255,0.25);
+  }
+
+  .price-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+
+  .footer-logo img {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(0,229,255,0.4);
+  }
+
+  .footer-copy {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { flex-direction: column; padding: 100px 24px 60px; text-align: center; }
+    .hero-image { flex: none; }
+    .hero-actions { justify-content: center; }
+    .steps { grid-template-columns: 1fr; }
+    .demo-inner { grid-template-columns: 1fr; gap: 40px; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .section { padding: 60px 24px; }
+    .demo-section { padding: 60px 24px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <img src="/mnt/user-data/uploads/1000051932.png" alt="NekoShield">
+    Neko<span>Shield</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#">How it works</a></li>
+    <li><a href="#">Brands covered</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">WhatsApp Bot</a></li>
+  </ul>
+  <button class="nav-cta">Try for Free</button>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      AI-Powered Phishing Detection
+    </div>
+    <h1>Don't get caught by a <span class="accent-pink">fake</span> <span class="accent-cyan">link.</span></h1>
+    <p class="hero-sub">NekoShield analyzes suspicious messages, screenshots, and links instantly. Protect yourself from crypto scams, fake Amazon emails, and banking fraud — before it's too late.</p>
+    <div class="hero-actions">
+      <button class="btn-primary">🛡️ Check a Link Now</button>
+      <button class="btn-secondary">Try WhatsApp Bot →</button>
+    </div>
+  </div>
+  <div class="hero-image">
+    <div class="neko-glow"></div>
+    <div class="shield-ring"></div>
+    <img src="/mnt/user-data/uploads/1000051932.png" alt="NekoShield Cat" class="neko-img">
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat">
+      <div class="stat-num">3.4B+</div>
+      <div class="stat-label">Phishing emails sent daily</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">90%</div>
+      <div class="stat-label">Of cyberattacks start with phishing</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">$3.4B</div>
+      <div class="stat-label">Global phishing damage per year</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">2 days</div>
+      <div class="stat-label">Average age of phishing domains</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section">
+  <div class="section-label">How it works</div>
+  <div class="section-title">Neko catches what<br>humans miss.</div>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-icon">📸</div>
+      <div class="step-title">Send a screenshot or message</div>
+      <div class="step-desc">Got a suspicious WhatsApp message, email, or SMS? Forward it to NekoShield — no need to click any link.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-icon">🧠</div>
+      <div class="step-title">AI analyzes in seconds</div>
+      <div class="step-desc">Our AI checks the domain age, brand impersonation, phishing databases, and hidden redirects simultaneously.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-icon">🚨</div>
+      <div class="step-title">Get a clear verdict</div>
+      <div class="step-desc">Receive an instant report: safe, suspicious, or dangerous — with a plain-language explanation anyone can understand.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO -->
+<div class="demo-section">
+  <div class="demo-inner">
+    <div>
+      <div class="section-label">Live example</div>
+      <div class="section-title" style="margin-bottom:20px">See Neko<br>in action.</div>
+      <p style="color:var(--muted);font-size:0.95rem;line-height:1.8;max-width:420px">A user receives a message claiming to be from Coinbase asking them to verify their wallet. NekoShield instantly detects the threat before any damage is done.</p>
+    </div>
+    <div class="demo-card">
+      <div class="demo-header">
+        <div class="demo-dot red"></div>
+        <div class="demo-dot yellow"></div>
+        <div class="demo-dot green"></div>
+        <div class="demo-title-bar">NekoShield Analysis Report</div>
+      </div>
+      <div class="result-item">
+        <div class="result-icon danger">🎭</div>
+        <div>
+          <div class="result-label">Brand impersonated</div>
+          <div class="result-value danger">Coinbase (94% match)</div>
+        </div>
+      </div>
+      <div class="result-item">
+        <div class="result-icon danger">📅</div>
+        <div>
+          <div class="result-label">Domain age</div>
+          <div class="result-value danger">Registered 2 days ago</div>
+        </div>
+      </div>
+      <div class="result-item">
+        <div class="result-icon warning">🌍</div>
+        <div>
+          <div class="result-label">Server location</div>
+          <div class="result-value warning">Netherlands (suspicious)</div>
+        </div>
+      </div>
+      <div class="result-item">
+        <div class="result-icon safe">🔒</div>
+        <div>
+          <div class="result-label">Real Coinbase domain</div>
+          <div class="result-value safe">coinbase.com</div>
+        </div>
+      </div>
+      <div class="result-item">
+        <div class="result-icon danger">⚠️</div>
+        <div>
+          <div class="result-label">PhishTank status</div>
+          <div class="result-value danger">Known phishing site</div>
+        </div>
+      </div>
+      <div class="risk-badge">🚨 HIGH RISK — Do not proceed</div>
+    </div>
+  </div>
+</div>
+
+<!-- BRANDS -->
+<div class="brands-section">
+  <div class="section-label">Coverage</div>
+  <div class="section-title">Protecting you from<br>impersonators of 100+ brands.</div>
+  <div class="brands-grid">
+    <div class="brand-pill">💳 PayPal</div>
+    <div class="brand-pill">📦 Amazon</div>
+    <div class="brand-pill">₿ Coinbase</div>
+    <div class="brand-pill">🔶 Binance</div>
+    <div class="brand-pill">🏦 Chase Bank</div>
+    <div class="brand-pill">🍎 Apple</div>
+    <div class="brand-pill">🪟 Microsoft</div>
+    <div class="brand-pill">🛒 Mercado Libre</div>
+    <div class="brand-pill">💚 WhatsApp</div>
+    <div class="brand-pill">📘 Facebook</div>
+    <div class="brand-pill">🏦 Bank of America</div>
+    <div class="brand-pill">🌐 + 90 more</div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="section">
+  <div class="section-label">Pricing</div>
+  <div class="section-title">Start free.<br>Scale when ready.</div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-plan">Free</div>
+      <div class="price-amount">$0<span>/mo</span></div>
+      <div class="price-desc">For personal use</div>
+      <ul class="price-features">
+        <li>5 link checks per month</li>
+        <li>Screenshot analysis</li>
+        <li>Basic brand detection</li>
+        <li>WhatsApp bot access</li>
+      </ul>
+      <button class="price-btn">Get Started</button>
+    </div>
+    <div class="price-card featured">
+      <div class="featured-badge">Most Popular</div>
+      <div class="price-plan">Pro</div>
+      <div class="price-amount">$4.99<span>/mo</span></div>
+      <div class="price-desc">For heavy users</div>
+      <ul class="price-features">
+        <li>Unlimited checks</li>
+        <li>Advanced AI analysis</li>
+        <li>Domain fingerprinting</li>
+        <li>Priority WhatsApp bot</li>
+        <li>Detailed threat reports</li>
+      </ul>
+      <button class="price-btn featured-btn">Start Pro Free</button>
+    </div>
+    <div class="price-card">
+      <div class="price-plan">Business</div>
+      <div class="price-amount">$19.99<span>/mo</span></div>
+      <div class="price-desc">For teams & companies</div>
+      <ul class="price-features">
+        <li>Up to 10 users</li>
+        <li>API access</li>
+        <li>Custom brand monitoring</li>
+        <li>Auto-reporting to PhishTank</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="price-btn">Contact Sales</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <img src="/mnt/user-data/uploads/1000051932.png" alt="NekoShield">
+    Neko<span style="color:var(--cyan)">Shield</span>
+  </div>
+  <div class="footer-copy">© 2025 NekoShield. Protecting the internet, one link at a time. 🛡️</div>
+</footer>
+
+</body>
+</html>
