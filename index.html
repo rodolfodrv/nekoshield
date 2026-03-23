@@ -684,6 +684,234 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ANALYZER MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,8,16,0.92);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--card);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 0 60px rgba(0,229,255,0.1);
+    transform: translateY(20px);
+    transition: transform 0.3s;
+  }
+  .modal-overlay.active .modal { transform: translateY(0); }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .modal-close {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { color: var(--text); background: rgba(255,255,255,0.1); }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .input-area {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+  .input-area:focus { border-color: rgba(0,229,255,0.4); }
+  .input-area::placeholder { color: var(--muted); }
+
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .upload-area:hover { border-color: rgba(0,229,255,0.3); background: rgba(0,229,255,0.03); }
+  .upload-area p { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+
+  .analyze-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--cyan), #0099bb);
+    color: var(--dark);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px rgba(0,229,255,0.2);
+  }
+  .analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(0,229,255,0.35); }
+  .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* RESULTS */
+  .results-area {
+    margin-top: 24px;
+    display: none;
+  }
+  .results-area.show { display: block; }
+
+  .score-circle {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .score-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -2px;
+  }
+  .score-num.safe { color: var(--green); }
+  .score-num.suspicious { color: var(--yellow); }
+  .score-num.dangerous { color: var(--pink); }
+
+  .score-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  .verdict-badge.safe { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+  .verdict-badge.suspicious { background: rgba(255,214,0,0.12); color: var(--yellow); border: 1px solid rgba(255,214,0,0.3); }
+  .verdict-badge.dangerous { background: rgba(255,45,120,0.12); color: var(--pink); border: 1px solid rgba(255,45,120,0.3); }
+
+  .signals-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+
+  .signal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .signal-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .signal-dot.danger { background: var(--pink); }
+  .signal-dot.warning { background: var(--yellow); }
+  .signal-dot.safe { background: var(--green); }
+
+  .signal-label { font-size: 0.75rem; color: var(--muted); }
+  .signal-value { font-size: 0.88rem; font-weight: 500; margin-top: 2px; }
+
+  .explanation-box {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: 40px 0;
+    display: none;
+  }
+  .loading-state.show { display: block; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(0,229,255,0.2);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  .loading-text { color: var(--muted); font-size: 0.9rem; }
+
   /* Responsive */
   @media (max-width: 900px) {
     nav { padding: 16px 24px; }
@@ -718,7 +946,7 @@
     <li><a href="#">Pricing</a></li>
     <li><a href="#">WhatsApp Bot</a></li>
   </ul>
-  <button class="nav-cta">Try for Free</button>
+  <button class="nav-cta" onclick="openModal()">Try for Free</button>
 </nav>
 
 <!-- HERO -->
@@ -731,7 +959,7 @@
     <h1>Don't get caught by a <span class="accent-pink">fake</span> <span class="accent-cyan">link.</span></h1>
     <p class="hero-sub">NekoShield analyzes suspicious messages, screenshots, and links instantly. Protect yourself from crypto scams, fake Amazon emails, and banking fraud — before it's too late.</p>
     <div class="hero-actions">
-      <button class="btn-primary">🛡️ Check a Link Now</button>
+      <button class="btn-primary" onclick="openModal()">🛡️ Check a Link Now</button>
       <button class="btn-secondary">Try WhatsApp Bot →</button>
     </div>
   </div>
@@ -911,6 +1139,205 @@
     </div>
   </div>
 </div>
+
+<!-- ANALYZER MODAL -->
+<div class="modal-overlay" id="analyzerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🛡️ NekoShield Analyzer</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('url')">🔗 Paste a URL</button>
+      <button class="tab" onclick="switchTab('screenshot')">📸 Upload Screenshot</button>
+    </div>
+
+    <!-- URL Tab -->
+    <div class="tab-content active" id="tab-url">
+      <input type="text" class="input-area" id="urlInput" placeholder="e.g. https://paypal-verify-login.net" />
+      <button class="analyze-btn" onclick="analyzeUrl()">🔍 Analyze Now</button>
+    </div>
+
+    <!-- Screenshot Tab -->
+    <div class="tab-content" id="tab-screenshot">
+      <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size:2rem">📸</div>
+        <p>Click to upload a screenshot of the suspicious message</p>
+        <p style="font-size:0.75rem;margin-top:4px">JPG, PNG supported</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileUpload(event)">
+      <div id="fileName" style="font-size:0.8rem;color:var(--cyan);margin-top:8px;text-align:center"></div>
+      <button class="analyze-btn" onclick="analyzeScreenshot()">🔍 Analyze Screenshot</button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">Neko is analyzing... 🐱</div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-area" id="resultsArea">
+      <div class="score-circle">
+        <div class="score-num" id="scoreNum">0</div>
+        <div class="score-label">Risk Score</div>
+        <div><span class="verdict-badge" id="verdictBadge">Safe</span></div>
+      </div>
+      <div class="signals-list" id="signalsList"></div>
+      <div class="explanation-box" id="explanationBox" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://nekoshield-server-production.up.railway.app';
+let uploadedFile = null;
+
+function openModal() {
+  document.getElementById('analyzerModal').classList.add('active');
+  resetModal();
+}
+
+function closeModal() {
+  document.getElementById('analyzerModal').classList.remove('active');
+}
+
+function resetModal() {
+  document.getElementById('urlInput').value = '';
+  document.getElementById('fileName').textContent = '';
+  document.getElementById('loadingState').classList.remove('show');
+  document.getElementById('resultsArea').classList.remove('show');
+  uploadedFile = null;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('loadingState').classList.remove('show');
+  document.getElementById('resultsArea').classList.remove('show');
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    uploadedFile = file;
+    document.getElementById('fileName').textContent = '✅ ' + file.name;
+  }
+}
+
+async function analyzeUrl() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { alert('Please enter a URL to analyze'); return; }
+
+  showLoading('Checking databases... 🔍');
+
+  try {
+    const response = await fetch(`${API_URL}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await response.json();
+    showResults(data);
+  } catch (error) {
+    showError();
+  }
+}
+
+async function analyzeScreenshot() {
+  if (!uploadedFile) { alert('Please upload a screenshot first'); return; }
+
+  showLoading('Neko is reading the screenshot... 🐱');
+
+  try {
+    const base64 = await fileToBase64(uploadedFile);
+    const response = await fetch(`${API_URL}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ screenshot: base64 })
+    });
+    const data = await response.json();
+    showResults(data);
+  } catch (error) {
+    showError();
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingState').classList.add('show');
+  document.getElementById('resultsArea').classList.remove('show');
+}
+
+function showResults(data) {
+  document.getElementById('loadingState').classList.remove('show');
+  document.getElementById('resultsArea').classList.add('show');
+
+  const score = data.score || 0;
+  const verdict = data.verdict || 'safe';
+
+  // Score
+  const scoreEl = document.getElementById('scoreNum');
+  scoreEl.textContent = score;
+  scoreEl.className = 'score-num ' + verdict;
+
+  // Verdict badge
+  const badges = { safe: '✅ Safe', suspicious: '⚠️ Suspicious', dangerous: '🚨 Dangerous' };
+  const verdictEl = document.getElementById('verdictBadge');
+  verdictEl.textContent = badges[verdict];
+  verdictEl.className = 'verdict-badge ' + verdict;
+
+  // Signals
+  const signalsList = document.getElementById('signalsList');
+  signalsList.innerHTML = '';
+  if (data.signals && data.signals.length > 0) {
+    data.signals.forEach(signal => {
+      signalsList.innerHTML += `
+        <div class="signal-item">
+          <div class="signal-dot ${signal.type}"></div>
+          <div>
+            <div class="signal-label">${signal.label}</div>
+            <div class="signal-value">${signal.value}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  // Explanation
+  if (data.explanation) {
+    const expBox = document.getElementById('explanationBox');
+    expBox.textContent = '🐱 ' + data.explanation;
+    expBox.style.display = 'block';
+  }
+}
+
+function showError() {
+  document.getElementById('loadingState').classList.remove('show');
+  document.getElementById('resultsArea').classList.add('show');
+  document.getElementById('scoreNum').textContent = '?';
+  document.getElementById('scoreNum').className = 'score-num suspicious';
+  document.getElementById('verdictBadge').textContent = '⚠️ Error';
+  document.getElementById('verdictBadge').className = 'verdict-badge suspicious';
+  document.getElementById('signalsList').innerHTML = '<div class="signal-item"><div class="signal-dot warning"></div><div><div class="signal-label">Connection Error</div><div class="signal-value">Could not reach NekoShield server. Please try again.</div></div></div>';
+}
+
+// Close modal clicking outside
+document.getElementById('analyzerModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
 
 <!-- FOOTER -->
 <footer>
