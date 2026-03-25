@@ -1249,15 +1249,14 @@ async function analyzeUrl() {
 
 async function analyzeScreenshot() {
   if (!uploadedFile) { alert('Please upload a screenshot first'); return; }
-
   showLoading('Neko is reading the screenshot... 🐱');
-
   try {
     const base64 = await fileToBase64(uploadedFile);
+    const fileType = uploadedFile.type || 'image/jpeg';
     const response = await fetch(`${API_URL}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ screenshot: base64 })
+      body: JSON.stringify({ screenshot: base64, imageType: fileType })
     });
     const data = await response.json();
     showResults(data);
@@ -1290,7 +1289,7 @@ function showResults(data) {
 
   // Score
   const scoreEl = document.getElementById('scoreNum');
-  scoreEl.textContent = score;
+  scoreEl.textContent = score + '%';
   scoreEl.className = 'score-num ' + verdict;
 
   // Verdict badge
