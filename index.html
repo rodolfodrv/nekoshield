@@ -226,7 +226,7 @@
 
 <nav>
   <div class="nav-logo">
-    <img src"/neko.jpg" alt="NekoShield" onerror="this.src=''">
+    <img src="https://nekoshield.com/neko.png" alt="NekoShield" onerror="this.style.display='none'">
     Neko<span>Shield</span>
   </div>
   <ul class="nav-links">
@@ -249,13 +249,13 @@
     <p class="hero-sub">NekoShield instantly detects phishing attempts, scam messages, and fake websites. Protect yourself from crypto fraud, fake Amazon emails, and banking scams — before it's too late.</p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="openModal()">🛡️ Check Now — It's Free</button>
-      <button class="btn-secondary" onclick="window.open('https://wa.me/14155238886?text=hola','_blank')">Try WhatsApp Bot →</button>
+      <button class="btn-secondary">Try WhatsApp Bot →</button>
     </div>
   </div>
   <div class="hero-image">
     <div class="neko-glow"></div>
     <div class="shield-ring"></div>
-    <img src="/neko.jpg" alt="NekoShield" class="neko-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>'">
+    <img src="https://nekoshield.com/neko.png" alt="NekoShield" class="neko-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>'">
   </div>
 </div>
 
@@ -455,6 +455,17 @@
       <div class="modal-title">🛡️ NekoShield</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
+    <!-- Token Bar (shown when logged in) -->
+    <div id="tokenBar" style="display:none;background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.15);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:none;align-items:center;justify-content:space-between;">
+      <div style="font-size:0.8rem;color:var(--muted);">Logged in as <span id="userEmail" style="color:var(--cyan)"></span></div>
+      <div style="font-size:0.85rem;font-weight:700;">🪙 <span id="tokenCount">0</span> tokens</div>
+    </div>
+
+    <!-- Login prompt (shown when not logged in) -->
+    <div id="loginPrompt" style="background:rgba(255,214,0,0.06);border:1px solid rgba(255,214,0,0.15);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:0.82rem;color:var(--yellow);text-align:center;">
+      ⚡ <strong>1 free check</strong> without account — <a href="#" onclick="showRegister()" style="color:var(--cyan);text-decoration:none;font-weight:700;">Register for 10 free tokens →</a>
+    </div>
+
     <div class="tabs">
       <button class="tab active" onclick="switchTab('url', event)">🔗 Paste a Link</button>
       <button class="tab" onclick="switchTab('screenshot', event)">📸 Upload Screenshot</button>
@@ -485,14 +496,30 @@
       </div>
       <div class="signals-list" id="signalsList"></div>
       <div class="explanation-box" id="explanationBox" style="display:none"></div>
+      <div id="tokensAfter" style="display:none;margin-top:12px;text-align:center;font-size:0.8rem;color:var(--muted);">🪙 Tokens remaining: <strong id="tokensAfterCount"></strong></div>
     </div>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-overlay" id="registerModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">🪙 Get Free NekoTokens</div>
+      <button class="modal-close" onclick="closeRegister()">✕</button>
+    </div>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:20px;">Register with your email and get <strong style="color:var(--cyan)">10 free NekoTokens</strong> — no credit card needed.</p>
+    <input type="email" class="input-area" id="registerEmail" placeholder="your@email.com" style="margin-bottom:12px;" />
+    <div id="registerMsg" style="font-size:0.82rem;margin-bottom:12px;text-align:center;display:none;"></div>
+    <button class="analyze-btn" onclick="registerUser()" style="margin-top:0;">Get My Free Tokens 🪙</button>
+    <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:12px;">Already have an account? <a href="#" onclick="loginUser()" style="color:var(--cyan);text-decoration:none;">Sign in</a></p>
   </div>
 </div>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
-    <img /neko.jpg" alt="NekoShield" onerror="this.src=''">
+    <img src="https://nekoshield.com/neko.png" alt="NekoShield" onerror="this.style.display='none'">
     Neko<span style="color:var(--cyan)">Shield</span>
   </div>
   <div class="footer-copy">© 2026 NekoShield. Protecting the internet, one link at a time. 🛡️</div>
@@ -501,10 +528,47 @@
 <script>
 const API_URL = 'https://nekoshield-server.onrender.com';
 let uploadedFile = null;
+let currentUser = null;
+let freeCheckUsed = false;
+
+// Load user from localStorage
+window.addEventListener('load', function() {
+  var savedEmail = localStorage.getItem('nekoEmail');
+  if (savedEmail) loadUser(savedEmail);
+});
+
+async function loadUser(email) {
+  try {
+    var response = await fetch(API_URL + '/tokens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    });
+    if (response.ok) {
+      var data = await response.json();
+      currentUser = { email: email, tokens: data.tokens };
+      localStorage.setItem('nekoEmail', email);
+      updateTokenUI();
+    }
+  } catch(e) {}
+}
+
+function updateTokenUI() {
+  if (currentUser) {
+    document.getElementById('tokenBar').style.display = 'flex';
+    document.getElementById('loginPrompt').style.display = 'none';
+    document.getElementById('userEmail').textContent = currentUser.email;
+    document.getElementById('tokenCount').textContent = currentUser.tokens;
+  } else {
+    document.getElementById('tokenBar').style.display = 'none';
+    document.getElementById('loginPrompt').style.display = 'block';
+  }
+}
 
 function openModal() {
   document.getElementById('analyzerModal').classList.add('active');
   resetModal();
+  updateTokenUI();
 }
 
 function closeModal() {
@@ -516,6 +580,7 @@ function resetModal() {
   document.getElementById('fileName').textContent = '';
   document.getElementById('loadingState').classList.remove('show');
   document.getElementById('resultsArea').classList.remove('show');
+  document.getElementById('tokensAfter').style.display = 'none';
   uploadedFile = null;
 }
 
@@ -536,33 +601,71 @@ function handleFileUpload(event) {
   }
 }
 
+function canAnalyze() {
+  if (currentUser && currentUser.tokens >= 5) return true;
+  if (!currentUser && !freeCheckUsed) return true;
+  return false;
+}
+
 async function analyzeUrl() {
   var url = document.getElementById('urlInput').value.trim();
   if (!url) { alert('Please enter a URL to analyze'); return; }
+
+  if (!canAnalyze()) {
+    showRegister();
+    return;
+  }
+
   showLoading();
   try {
+    var body = { url: url };
+    if (currentUser) body.email = currentUser.email;
+
     var response = await fetch(API_URL + '/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: url })
+      body: JSON.stringify(body)
     });
     var data = await response.json();
+
+    if (!currentUser) freeCheckUsed = true;
+    if (currentUser && data.tokensRemaining !== undefined) {
+      currentUser.tokens = data.tokensRemaining;
+      document.getElementById('tokenCount').textContent = currentUser.tokens;
+    }
+
     showResults(data);
   } catch (error) { showError(); }
 }
 
 async function analyzeScreenshot() {
   if (!uploadedFile) { alert('Please upload a screenshot first'); return; }
+
+  if (!canAnalyze()) {
+    showRegister();
+    return;
+  }
+
   showLoading();
   try {
     var base64 = await fileToBase64(uploadedFile);
     var fileType = uploadedFile.type || 'image/jpeg';
+    var body = { screenshot: base64, imageType: fileType };
+    if (currentUser) body.email = currentUser.email;
+
     var response = await fetch(API_URL + '/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ screenshot: base64, imageType: fileType })
+      body: JSON.stringify(body)
     });
     var data = await response.json();
+
+    if (!currentUser) freeCheckUsed = true;
+    if (currentUser && data.tokensRemaining !== undefined) {
+      currentUser.tokens = data.tokensRemaining;
+      document.getElementById('tokenCount').textContent = currentUser.tokens;
+    }
+
     showResults(data);
   } catch (error) { showError(); }
 }
@@ -599,7 +702,6 @@ function showResults(data) {
   if (verdict === 'safe') {
     icon.textContent = '✅';
     title.textContent = 'SECURE';
-    scoreEl.textContent = 'No significant threats detected';
     scoreEl.innerHTML = 'No significant threats detected';
   } else if (verdict === 'suspicious') {
     icon.textContent = '⚠️';
@@ -635,6 +737,16 @@ function showResults(data) {
     expBox.textContent = '🛡️ ' + data.explanation;
     expBox.style.display = 'block';
   }
+
+  if (data.tokensRemaining !== undefined) {
+    document.getElementById('tokensAfter').style.display = 'block';
+    document.getElementById('tokensAfterCount').textContent = data.tokensRemaining;
+  }
+
+  // If free check used, show register prompt after result
+  if (!currentUser && freeCheckUsed) {
+    signalsList.innerHTML += '<div style="margin-top:12px;padding:12px;background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.2);border-radius:10px;text-align:center;font-size:0.82rem;"><span style="color:var(--muted)">Want more checks?</span> <a href="#" onclick="showRegister()" style="color:var(--cyan);font-weight:700;text-decoration:none;">Get 10 free tokens →</a></div>';
+  }
 }
 
 function showError() {
@@ -650,8 +762,74 @@ function showError() {
   document.getElementById('signalsList').innerHTML = '';
 }
 
+// Register / Login
+function showRegister() {
+  document.getElementById('registerModal').classList.add('active');
+  document.getElementById('registerMsg').style.display = 'none';
+}
+
+function closeRegister() {
+  document.getElementById('registerModal').classList.remove('active');
+}
+
+async function registerUser() {
+  var email = document.getElementById('registerEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    showRegisterMsg('Please enter a valid email.', 'var(--pink)');
+    return;
+  }
+
+  try {
+    var response = await fetch(API_URL + '/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email })
+    });
+    var data = await response.json();
+
+    if (data.success) {
+      currentUser = { email: email, tokens: data.tokens };
+      localStorage.setItem('nekoEmail', email);
+      showRegisterMsg('🎉 ' + data.message, 'var(--green)');
+      setTimeout(function() {
+        closeRegister();
+        updateTokenUI();
+      }, 1500);
+    } else {
+      showRegisterMsg(data.error || 'Something went wrong.', 'var(--pink)');
+    }
+  } catch(e) {
+    showRegisterMsg('Connection error. Please try again.', 'var(--pink)');
+  }
+}
+
+async function loginUser() {
+  var email = document.getElementById('registerEmail').value.trim();
+  if (!email || !email.includes('@')) {
+    showRegisterMsg('Please enter your email to sign in.', 'var(--yellow)');
+    return;
+  }
+  await loadUser(email);
+  if (currentUser) {
+    showRegisterMsg('✅ Welcome back! You have ' + currentUser.tokens + ' tokens.', 'var(--green)');
+    setTimeout(function() { closeRegister(); }, 1500);
+  } else {
+    showRegisterMsg('Email not found. Please register first.', 'var(--pink)');
+  }
+}
+
+function showRegisterMsg(msg, color) {
+  var el = document.getElementById('registerMsg');
+  el.textContent = msg;
+  el.style.color = color;
+  el.style.display = 'block';
+}
+
 document.getElementById('analyzerModal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
+});
+document.getElementById('registerModal').addEventListener('click', function(e) {
+  if (e.target === this) closeRegister();
 });
 </script>
 </body>
