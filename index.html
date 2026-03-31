@@ -226,7 +226,7 @@
 
 <nav>
   <div class="nav-logo">
-    <img src="https://nekoshield.com/neko.png" alt="NekoShield" onerror="this.style.display='none'">
+    <img src="/neko.jpg" alt="NekoShield" onerror="this.style.display='none'">
     Neko<span>Shield</span>
   </div>
   <ul class="nav-links">
@@ -249,13 +249,13 @@
     <p class="hero-sub">NekoShield instantly detects phishing attempts, scam messages, and fake websites. Protect yourself from crypto fraud, fake Amazon emails, and banking scams — before it's too late.</p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="openModal()">🛡️ Check Now — It's Free</button>
-      <button class="btn-secondary">Try WhatsApp Bot →</button>
+      <button class="btn-secondary" onclick="window.open('https://wa.me/14155238886?text=hola','_blank')">Try WhatsApp Bot →</button>
     </div>
   </div>
   <div class="hero-image">
     <div class="neko-glow"></div>
     <div class="shield-ring"></div>
-    <img src="https://nekoshield.com/neko.png" alt="NekoShield" class="neko-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>'">
+    <img src="/neko.jpg" alt="NekoShield" class="neko-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>'">
   </div>
 </div>
 
@@ -383,63 +383,71 @@
 
     <div class="price-card">
       <div class="price-plan">Free</div>
-      <div class="price-amount">$0<span>/mo</span></div>
-      <div class="price-desc">For occasional use</div>
+      <div class="price-amount">$0</div>
+      <div class="price-desc">Try it out — no account needed</div>
       <ul class="price-features">
-        <li>3 checks per month</li>
+        <li>1 free check instantly</li>
         <li>Link analysis</li>
         <li>Screenshot analysis</li>
         <li>Basic threat report</li>
       </ul>
-      <button class="price-btn" onclick="openModal()">Get Started</button>
+      <button class="price-btn" onclick="openModal()">Try Now</button>
     </div>
 
     <div class="price-card">
-      <div class="price-plan">Pay Per Check</div>
-      <div class="price-amount">$0.50<span>/check</span></div>
-      <div class="price-desc">No subscription needed</div>
+      <div class="price-plan">Starter</div>
+      <div class="price-amount">$4.99</div>
+      <div class="price-desc">100 NekoTokens — never expire</div>
       <ul class="price-features">
-        <li>Pay only when you use it</li>
-        <li>Full AI-powered analysis</li>
+        <li>🪙 100 NekoTokens</li>
+        <li>Each check costs 5 tokens</li>
+        <li>Full threat analysis</li>
         <li>Screenshot analysis</li>
-        <li>Detailed threat report</li>
+        <li>WhatsApp Bot access</li>
       </ul>
-      <button class="price-btn">Buy Credits</button>
+      <button class="price-btn" onclick="showRegister()">Get Tokens 🪙</button>
     </div>
 
     <div class="price-card featured">
-      <div class="featured-badge">Most Popular</div>
+      <div class="featured-badge">Best Value</div>
       <div class="price-plan">Pro</div>
-      <div class="price-amount">$4.99<span>/mo</span></div>
-      <div class="price-desc">For frequent users</div>
+      <div class="price-amount">$14.99</div>
+      <div class="price-desc">500 NekoTokens — never expire</div>
       <ul class="price-features">
-        <li>Unlimited checks</li>
-        <li>Full AI-powered analysis</li>
+        <li>🪙 500 NekoTokens</li>
+        <li>Each check costs 5 tokens</li>
+        <li>Full threat analysis</li>
+        <li>Screenshot analysis</li>
         <li>WhatsApp Bot access</li>
         <li>Priority processing</li>
-        <li>Detailed threat reports</li>
       </ul>
-      <button class="price-btn featured-btn" onclick="openModal()">Start Free Trial</button>
+      <button class="price-btn featured-btn" onclick="showRegister()">Get Tokens 🪙</button>
     </div>
 
     <div class="price-card">
       <div class="price-plan">Business</div>
       <div class="price-amount">$19.99<span>/mo</span></div>
-      <div class="price-desc">For teams & companies</div>
+     <div class="price-desc">1,000 NekoTokens — never expire</div>
       <ul class="price-features">
+        <li>🪙 1,000 NekoTokens</li>
         <li>Up to 10 users</li>
         <li>API access</li>
         <li>Checked against all global threat databases</li>
-        <li>Auto threat reporting</li>
         <li>Priority support</li>
       </ul>
-      <button class="price-btn">Get Started</button>
+      <button class="price-btn">Contact Us</button>
     </div>
 
   </div>
 
+  <!-- Token explanation -->
+  <div style="margin-top:20px;background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.12);border-radius:16px;padding:20px 24px;text-align:center;">
+    <div style="font-size:1.1rem;margin-bottom:6px;">🪙 What are <strong style="color:var(--cyan)">NekoTokens</strong>?</div>
+    <div style="color:var(--muted);font-size:0.85rem;">NekoTokens are your analysis credits. Each check costs 5 tokens. Tokens never expire — use them whenever you need.</div>
+  </div>
+
   <!-- Enterprise -->
-  <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
+  <div style="margin-top:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px;">
     <div>
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin-bottom:8px;">🏛️ Enterprise & Institutions</div>
       <div style="color:var(--muted);font-size:0.9rem;max-width:500px;">Banks, government agencies, and large organizations. Custom integration, dedicated support, and volume pricing tailored to your needs.</div>
@@ -519,7 +527,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">
-    <img src="https://nekoshield.com/neko.png" alt="NekoShield" onerror="this.style.display='none'">
+    <img src="/neko.jpg" alt="NekoShield" onerror="this.style.display='none'">
     Neko<span style="color:var(--cyan)">Shield</span>
   </div>
   <div class="footer-copy">© 2026 NekoShield. Protecting the internet, one link at a time. 🛡️</div>
@@ -529,7 +537,7 @@
 const API_URL = 'https://nekoshield-server.onrender.com';
 let uploadedFile = null;
 let currentUser = null;
-let freeCheckUsed = false;
+let freeCheckUsed = localStorage.getItem('nekoFreeUsed') === 'true';
 
 // Load user from localStorage
 window.addEventListener('load', function() {
@@ -628,7 +636,7 @@ async function analyzeUrl() {
     });
     var data = await response.json();
 
-    if (!currentUser) freeCheckUsed = true;
+    if (!currentUser) { freeCheckUsed = true; localStorage.setItem("nekoFreeUsed", "true"); }
     if (currentUser && data.tokensRemaining !== undefined) {
       currentUser.tokens = data.tokensRemaining;
       document.getElementById('tokenCount').textContent = currentUser.tokens;
@@ -660,7 +668,7 @@ async function analyzeScreenshot() {
     });
     var data = await response.json();
 
-    if (!currentUser) freeCheckUsed = true;
+    if (!currentUser) { freeCheckUsed = true; localStorage.setItem("nekoFreeUsed", "true"); }
     if (currentUser && data.tokensRemaining !== undefined) {
       currentUser.tokens = data.tokensRemaining;
       document.getElementById('tokenCount').textContent = currentUser.tokens;
