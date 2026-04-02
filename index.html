@@ -674,7 +674,7 @@ async function analyzeScreenshot() {
     });
     var data = await response.json();
 
-    if (!currentUser) { freeCheckUsed = true; localStorage.setItem("nekoFreeUsed", "true"); }
+    
     if (currentUser && data.tokensRemaining !== undefined) {
       currentUser.tokens = data.tokensRemaining;
       document.getElementById('tokenCount').textContent = currentUser.tokens;
