@@ -537,7 +537,7 @@
 const API_URL = 'https://nekoshield-server.onrender.com';
 let uploadedFile = null;
 let currentUser = null;
-let freeCheckUsed = localStorage.getItem('nekoFreeUsed') === 'true';
+
 
 // Load user from localStorage
 window.addEventListener('load', function() {
@@ -610,9 +610,15 @@ function handleFileUpload(event) {
 }
 
 function canAnalyze() {
-  if (currentUser && currentUser.tokens >= 5) return true;
-  if (!currentUser && !freeCheckUsed) return true;
-  return false;
+  if (!currentUser) {
+    showRegister();
+    return false;
+  }
+  if (currentUser.tokens < 5) {
+    alert('No tienes suficientes NekoTokens. Por favor adquiere más.');
+    return false;
+  }
+  return true;
 }
 
 async function analyzeUrl() {
@@ -636,7 +642,7 @@ async function analyzeUrl() {
     });
     var data = await response.json();
 
-    if (!currentUser) { freeCheckUsed = true; localStorage.setItem("nekoFreeUsed", "true"); }
+    
     if (currentUser && data.tokensRemaining !== undefined) {
       currentUser.tokens = data.tokensRemaining;
       document.getElementById('tokenCount').textContent = currentUser.tokens;
