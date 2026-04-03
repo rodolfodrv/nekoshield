@@ -816,7 +816,25 @@ function showRegister() {
 function closeRegister() {
   document.getElementById('registerModal').classList.remove('active');
 }
-
+async function startPayment(plan) {
+  if (!currentUser) { showRegister(); return; }
+  
+  try {
+    var response = await fetch(API_URL + '/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: plan, email: currentUser.email })
+    });
+    var data = await response.json();
+    if (data.approveUrl) {
+      window.location.href = data.approveUrl;
+    } else {
+      alert('Could not create order. Please try again.');
+    }
+  } catch(e) {
+    alert('Connection error. Please try again.');
+  }
+}
 async function registerUser() {
   var email = document.getElementById('registerEmail').value.trim();
   if (!email || !email.includes('@')) {
