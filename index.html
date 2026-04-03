@@ -574,7 +574,32 @@ let currentUser = null;
 window.addEventListener('load', function() {
   var savedEmail = localStorage.getItem('nekoEmail');
   if (savedEmail) loadUser(savedEmail);
+
+  var urlParams = new URLSearchParams(window.location.search);
+  var token = urlParams.get('token');
+  if (token && savedEmail) {
+    capturePayment(token, savedEmail);
+  }
 });
+
+async function capturePayment(orderID, email) {
+  try {
+    var response = await fetch(API_URL + '/capture-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderID: orderID, email: email })
+    });
+    var data = await response.json();
+    if (data.success) {
+      await loadUser(email);
+      openModal();
+      alert('Payment successful! ' + data.tokensAdded + ' NekoTokens added to your account.');
+      window.history.replaceState({}, document.title, '/');
+    }
+  } catch(e) {
+    console.error('Capture error:', e);
+  }
+}
 
 async function loadUser(email) {
   try {
