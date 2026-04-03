@@ -126,6 +126,7 @@
   .price-amount { font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800; letter-spacing: -2px; line-height: 1; margin-bottom: 4px; }
   .price-amount span { font-size: 0.9rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
   .price-desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 24px; margin-top: 8px; line-height: 1.5; }
+  .price-intro { font-size: 0.72rem; color: var(--muted); text-align: center; margin-top: 16px; opacity: 0.7; }
   .price-features { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
   .price-features li { font-size: 0.82rem; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; }
   .price-features li::before { content: '✓'; color: var(--cyan); font-weight: 700; flex-shrink: 0; }
@@ -381,18 +382,7 @@
   <div class="section-title">Start free.<br>Scale when ready.</div>
   <div class="pricing-grid">
 
-    <div class="price-card">
-      <div class="price-plan">Free</div>
-      <div class="price-amount">$0</div>
-      <div class="price-desc">Try it out — no account needed</div>
-      <ul class="price-features">
-        <li>1 free check instantly</li>
-        <li>Link analysis</li>
-        <li>Screenshot analysis</li>
-        <li>Basic threat report</li>
-      </ul>
-      <button class="price-btn" onclick="openModal()">Try Now</button>
-    </div>
+    
 
     <div class="price-card">
       <div class="price-plan">Starter</div>
@@ -406,6 +396,7 @@
         <li>WhatsApp Bot access</li>
       </ul>
       <button class="price-btn" onclick="showRegister()">Get Tokens 🪙</button>
+      <p class="price-intro">Introductory pricing — rates may change in the future.</p>
     </div>
 
     <div class="price-card featured">
@@ -422,6 +413,7 @@
         <li>Priority processing</li>
       </ul>
       <button class="price-btn featured-btn" onclick="showRegister()">Get Tokens 🪙</button>
+      <p class="price-intro">Introductory pricing — rates may change in the future.</p>
     </div>
 
     <div class="price-card">
@@ -436,6 +428,7 @@
         <li>Priority support</li>
       </ul>
       <button class="price-btn">Contact Us</button>
+      <p class="price-intro">Introductory pricing — rates may change in the future.</p>
     </div>
 
   </div>
