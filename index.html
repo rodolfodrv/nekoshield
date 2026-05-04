@@ -831,7 +831,7 @@ function showResults(data) {
   }
   var signalsList = document.getElementById('signalsList');
   signalsList.innerHTML = '';
-  var labelMap = { 'Brand Impersonation': 'Identity Check', 'AI Detection': 'Threat Signal', 'Google Safe Browsing': 'Network Check', 'Domain Age': 'Origin Check', 'AI Analysis': 'Threat Signal', 'URL Analysis': 'URL Analysis', 'SSL Certificate': 'SSL Check', 'Redirections': 'Redirections', 'Brand in Subdomain': 'Brand Check', 'Typosquatting': 'Domain Similarity', 'NekoShield Database': 'NekoShield DB', 'OpenPhish': 'Phishing DB', 'Whitelist': 'Trusted Domain' };
+  var labelMap = { 'Brand Impersonation': 'Identity Check', 'AI Detection': 'Threat Signal', 'Google Safe Browsing': 'Network Check', 'Domain Age': 'Origin Check', 'AI Analysis': 'Threat Signal', 'URL Analysis': 'URL Analysis', 'SSL Certificate': 'SSL Check', 'Redirections': 'Redirections', 'Brand in Subdomain': 'Brand Check', 'Typosquatting': 'Domain Similarity', 'NekoShield Database': 'NekoShield DB', 'OpenPhish': 'Phishing DB', 'Whitelist': 'Trusted Domain', 'DNS Check': 'DNS Check' };
   if (data.signals && data.signals.length > 0) {
     data.signals.forEach(function(signal) {
       var label = labelMap[signal.label] || signal.label;
